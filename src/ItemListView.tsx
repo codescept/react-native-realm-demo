@@ -9,55 +9,75 @@ import {CreateToDoPrompt} from './CreateToDoPrompt';
 import {realmContext} from './RealmContext';
 
 import {COLORS} from './Colors';
-import {Item, Task} from './ItemSchema';
+import {Templates, Teams, Tasks} from './ItemSchema';
+import {geteRandomTemplate, getRandomTeam} from './utils';
 
 const {useRealm, useQuery} = realmContext;
 
-const itemSubscriptionName = 'items';
-const ownItemsSubscriptionName = 'ownItems';
-const customFieldSubscriptionName = 'customFields';
-const ownCustomFieldSubscriptionName = 'ownCustomFields';
+const tasksSubscriptionName = 'tasks';
+const ownTasksSubscriptionName = 'ownTasks';
+
+const templatesSubscriptionName = 'templates';
+const ownTemplatesSubscriptionName = 'ownTemplates';
+
+const teamsSubscriptionName = 'teams';
+const ownTeamsSubscriptionName = 'ownTeams';
 
 export function ItemListView() {
   const realm = useRealm();
-  const items = useQuery(Item).sorted('_id');
+  const items = useQuery(Tasks).sorted('_id');
   const user = useUser();
 
-  console.log(JSON.stringify(items));
   const [showNewItemOverlay, setShowNewItemOverlay] = useState(false);
 
   const [showAllItems, setShowAllItems] = useState(
-    !!realm.subscriptions.findByName(itemSubscriptionName),
+    !!realm.subscriptions.findByName(tasksSubscriptionName),
   );
 
   useEffect(() => {
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
-        mutableSubs.removeByName(ownItemsSubscriptionName);
-        mutableSubs.add(realm.objects(Item), {name: itemSubscriptionName});
+        mutableSubs.removeByName(ownTasksSubscriptionName);
+        mutableSubs.add(realm.objects(Tasks), {name: tasksSubscriptionName});
       });
     } else {
       realm.subscriptions.update(mutableSubs => {
-        mutableSubs.removeByName(itemSubscriptionName);
+        mutableSubs.removeByName(tasksSubscriptionName);
         mutableSubs.add(
-          realm.objects(Item).filtered(`owner_id == "${user?.id}"`),
-          {name: ownItemsSubscriptionName},
+          realm.objects(Tasks).filtered(`owner_id == "${user?.id}"`),
+          {name: ownTasksSubscriptionName},
         );
       });
     }
 
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
-        mutableSubs.removeByName(ownCustomFieldSubscriptionName);
-        mutableSubs.add(realm.objects(Task), {
-          name: customFieldSubscriptionName,
+        mutableSubs.removeByName(ownTemplatesSubscriptionName);
+        mutableSubs.add(realm.objects(Templates), {
+          name: templatesSubscriptionName,
         });
       });
     } else {
       realm.subscriptions.update(mutableSubs => {
-        mutableSubs.removeByName(customFieldSubscriptionName);
-        mutableSubs.add(realm.objects(Task), {
-          name: ownCustomFieldSubscriptionName,
+        mutableSubs.removeByName(templatesSubscriptionName);
+        mutableSubs.add(realm.objects(Templates), {
+          name: ownTemplatesSubscriptionName,
+        });
+      });
+    }
+
+    if (showAllItems) {
+      realm.subscriptions.update(mutableSubs => {
+        mutableSubs.removeByName(ownTeamsSubscriptionName);
+        mutableSubs.add(realm.objects(Teams), {
+          name: teamsSubscriptionName,
+        });
+      });
+    } else {
+      realm.subscriptions.update(mutableSubs => {
+        mutableSubs.removeByName(teamsSubscriptionName);
+        mutableSubs.add(realm.objects(Teams), {
+          name: ownTeamsSubscriptionName,
         });
       });
     }
@@ -66,14 +86,30 @@ export function ItemListView() {
   // createItem() takes in a summary and then creates an Item object with that summary
   const createItem = useCallback(
     async (summary: any, value: any) => {
-      console.log({summary});
       realm.write(() => {
-        return new Item(realm, {
+        return new Tasks(realm, {
           owner_id: user?.id,
-          summary: summary,
-          customFields: JSON.stringify(value, summary),
-          task: {address: summary},
-        });
+          customFields: JSON.stringify({value, summary}),
+          job_status_: 'assigned',
+          team_id_: new BSON.ObjectId('6352ba8d9c171705b407d9f2'),
+        } as any);
+      });
+      realm.write(() => {
+        let template: any = geteRandomTemplate();
+        if (template.config) {
+          try {
+            template.config = JSON.stringify(template.config);
+          } catch (error) {}
+        }
+        if (template.fields) template.fields = JSON.stringify(template.fields);
+        return new Templates(realm, {...template, owner_id: user?.id});
+      });
+      realm.write(() => {
+        let team: any = getRandomTeam();
+        if (!team.location_accuracy_) team.location_accuracy_ = 'High';
+        if (team.template_id_)
+          team.template_id_ = JSON.stringify(team.template_id_);
+        return new Teams(realm, {...team, owner_id: user?.id});
       });
     },
     [realm, user],
@@ -83,7 +119,7 @@ export function ItemListView() {
   const deleteItem = useCallback(
     (id: BSON.ObjectId) => {
       // if the realm exists, get the Item with a particular _id and delete it
-      const item = realm.objectForPrimaryKey(Item, id); // search for a realm object with a primary key that is an objectId
+      const item = realm.objectForPrimaryKey(Tasks, id) as any; // search for a realm object with a primary key that is an objectId
       if (item) {
         if (item.owner_id !== user?.id) {
           Alert.alert("You can't delete someone else's task!");
@@ -127,9 +163,12 @@ export function ItemListView() {
         </Overlay>
         <FlatList
           keyExtractor={item => item._id.toString()}
-          data={items}
+          data={items as any}
           renderItem={({item}) => {
-            console.log('item>>>>', item.summary);
+            let summary: string = '';
+            try {
+              summary = JSON.parse(item.customFields).summary;
+            } catch (error) {}
             return (
               <ListItem
                 key={`${item._id}`}
@@ -138,24 +177,26 @@ export function ItemListView() {
                 hasTVPreferredFocus={undefined}
                 tvParallaxProperties={undefined}>
                 <ListItem.Title style={styles.itemTitle}>
-                  {item.summary}
+                  {summary}
                 </ListItem.Title>
                 <ListItem.Subtitle style={styles.itemSubtitle}>
-                  {item.owner_id === user?.id ? '(mine)' : ''}
+                  {item.owner_id === user?.id ? '(mine)' : user?.profile.email}
                 </ListItem.Subtitle>
-                <Button
-                  type="clear"
-                  onPress={() => deleteItem(item._id)}
-                  icon={
-                    <Icon
-                      type="material"
-                      name="clear"
-                      size={12}
-                      color="#979797"
-                      tvParallaxProperties={undefined}
-                    />
-                  }
-                />
+                {item.owner_id === user?.id && (
+                  <Button
+                    type="clear"
+                    onPress={() => deleteItem(item._id)}
+                    icon={
+                      <Icon
+                        type="material"
+                        name="clear"
+                        size={12}
+                        color="#979797"
+                        tvParallaxProperties={undefined}
+                      />
+                    }
+                  />
+                )}
               </ListItem>
             );
           }}
