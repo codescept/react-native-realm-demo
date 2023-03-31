@@ -1,6 +1,24 @@
 import Realm from 'realm';
 import {defaultProperties, getProperties, optionalProperty} from './utils';
 
+export class Teams extends Realm.Object {
+  static schema = getProperties('teams', {
+    address_: optionalProperty('string'),
+
+    location_accuracy_: 'string',
+    team_name_: 'string',
+
+    idOptional: optionalProperty('mixed'),
+
+    template_id_: optionalProperty('string'),
+
+    is_default: optionalProperty('bool'),
+    was_deleted: optionalProperty('bool'),
+
+    ...defaultProperties,
+  });
+}
+
 export class Tasks extends Realm.Object {
   static schema = getProperties('tasks', {
     duration: optionalProperty('mixed'), //  can be double, int, or undefined
@@ -46,24 +64,7 @@ export class Tasks extends Realm.Object {
       default: new Date(),
       optional: false,
     },
-    ...defaultProperties,
-  });
-}
-
-export class Teams extends Realm.Object {
-  static schema = getProperties('teams', {
-    address_: optionalProperty('string'),
-
-    location_accuracy_: 'string',
-    team_name_: 'string',
-
-    idOptional: optionalProperty('mixed'),
-
-    template_id_: optionalProperty('string'),
-
-    is_default: optionalProperty('bool'),
-    was_deleted: optionalProperty('bool'),
-
+    team: {type: 'object', objectType: 'teams'},
     ...defaultProperties,
   });
 }
