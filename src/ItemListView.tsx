@@ -26,7 +26,7 @@ const ownTeamsSubscriptionName = 'ownTeams';
 export function ItemListView() {
   const realm = useRealm();
   const items = useQuery(Tasks).sorted('_id');
-  console.log(JSON.parse(JSON.stringify(items)));
+
   const user = useUser();
 
   const [showNewItemOverlay, setShowNewItemOverlay] = useState(false);
@@ -102,7 +102,7 @@ export function ItemListView() {
           job_status_: 'assigned',
           team_id_: new BSON.ObjectId('6352ba8d9c171705b407d9f2'),
           team,
-        });
+        } as any);
       });
 
       realm.write(() => {
