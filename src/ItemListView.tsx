@@ -9,7 +9,7 @@ import {CreateToDoPrompt} from './CreateToDoPrompt';
 import {realmContext} from './RealmContext';
 
 import {COLORS} from './Colors';
-import {Templates, Teams, Tasks,Agents, UserRol} from './ItemSchema';
+import {Templates, Teams, Tasks, Agents, UserRol} from './ItemSchema';
 import {geteRandomTemplate, getRandomTeam} from './utils';
 
 const {useRealm, useQuery} = realmContext;
@@ -31,7 +31,7 @@ export function ItemListView() {
   const items = useQuery(Tasks).sorted('_id');
   const temas = useQuery(Teams).sorted('_id');
   const agn = useQuery(Agents).sorted('_id');
-  console.log(':', agn )
+  console.log(JSON.parse(JSON.stringify(agn)));
   const user = useUser();
 
   const [showNewItemOverlay, setShowNewItemOverlay] = useState(false);
@@ -41,19 +41,19 @@ export function ItemListView() {
   );
 
   useEffect(() => {
-
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
         mutableSubs.removeByName(ownagentsSubscriptionName);
-        mutableSubs.add(realm.objects(Agents), {name: agentsSubscriptionName});
+        mutableSubs.add(realm.objects(Agents), {
+          name: agentsSubscriptionName,
+        });
       });
     } else {
       realm.subscriptions.update(mutableSubs => {
         mutableSubs.removeByName(agentsSubscriptionName);
-        mutableSubs.add(
-          realm.objects(Agents).filtered(`owner_id == "${user?.id}"`),
-          {name: ownagentsSubscriptionName},
-        );
+        mutableSubs.add(realm.objects(Agents), {
+          name: ownagentsSubscriptionName,
+        });
       });
     }
 
@@ -72,7 +72,7 @@ export function ItemListView() {
       });
     }
 
-        if (showAllItems) {
+    if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
         mutableSubs.removeByName(ownTasksSubscriptionName);
         mutableSubs.add(realm.objects(Tasks), {name: tasksSubscriptionName});
@@ -137,7 +137,6 @@ export function ItemListView() {
           customFields: JSON.stringify({value, summary}),
           job_status_: 'assigned',
           team_id_: temas[1],
-          
         } as any);
       });
 
