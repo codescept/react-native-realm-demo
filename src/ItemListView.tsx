@@ -26,11 +26,16 @@ const ownTeamsSubscriptionName = 'ownTeams';
 const agentsSubscriptionName = 'agents';
 const ownagentsSubscriptionName = 'ownagents';
 
+const useRolSubscriptionName = 'agent_rols';
+const ownuseRolSubscriptionName = 'ownagentrol';
+
+
 export function ItemListView() {
   const realm = useRealm();
   const items = useQuery(Tasks).sorted('_id');
   const temas = useQuery(Teams).sorted('_id');
-  const agn = useQuery(Agents).sorted('_id');
+  //const agn = useQuery(Agents).sorted('_id');
+  const agn = useQuery(UserRol).sorted('_id');
   console.log(JSON.parse(JSON.stringify(agn)));
   const user = useUser();
 
@@ -41,6 +46,24 @@ export function ItemListView() {
   );
 
   useEffect(() => {
+    if (showAllItems) {
+      realm.subscriptions.update(mutableSubs => {
+        mutableSubs.removeByName(ownuseRolSubscriptionName);
+        mutableSubs.add(realm.objects(UserRol), {
+          name: useRolSubscriptionName,
+        });
+      });
+    } else {
+      realm.subscriptions.update(mutableSubs => {
+        mutableSubs.removeByName(useRolSubscriptionName);
+        mutableSubs.add(realm.objects(UserRol), {
+          name: ownuseRolSubscriptionName,
+        });
+      });
+    }
+
+
+
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
         mutableSubs.removeByName(ownagentsSubscriptionName);
