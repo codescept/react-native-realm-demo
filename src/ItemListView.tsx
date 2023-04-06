@@ -24,19 +24,18 @@ const teamsSubscriptionName = 'teams';
 const ownTeamsSubscriptionName = 'ownTeams';
 
 const agentsSubscriptionName = 'agents';
-const ownagentsSubscriptionName = 'ownagents';
+const ownagentsSubscriptionName = 'ownAgents';
 
 const useRolSubscriptionName = 'agent_rols';
-const ownuseRolSubscriptionName = 'ownagentrol';
-
+const ownuseRolSubscriptionName = 'ownAgent_rols';
 
 export function ItemListView() {
   const realm = useRealm();
   const items = useQuery(Tasks).sorted('_id');
   const temas = useQuery(Teams).sorted('_id');
-  //const agn = useQuery(Agents).sorted('_id');
-  const agn = useQuery(UserRol).sorted('_id');
-  console.log(JSON.parse(JSON.stringify(agn)));
+  const userRoles = useQuery(UserRol);
+  const agents = useQuery(Agents);
+  console.log(JSON.parse(JSON.stringify({agents, userRoles})));
   const user = useUser();
 
   const [showNewItemOverlay, setShowNewItemOverlay] = useState(false);
@@ -45,24 +44,24 @@ export function ItemListView() {
     !!realm.subscriptions.findByName(tasksSubscriptionName),
   );
 
+  // realm.addListener('change', error => console.log({error}));
+
   useEffect(() => {
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
         mutableSubs.removeByName(ownuseRolSubscriptionName);
-        mutableSubs.add(realm.objects(UserRol), {
+        mutableSubs.add(realm.objects('agent_rols'), {
           name: useRolSubscriptionName,
         });
       });
     } else {
       realm.subscriptions.update(mutableSubs => {
         mutableSubs.removeByName(useRolSubscriptionName);
-        mutableSubs.add(realm.objects(UserRol), {
+        mutableSubs.add(realm.objects('agent_rols'), {
           name: ownuseRolSubscriptionName,
         });
       });
     }
-
-
 
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
@@ -146,6 +145,38 @@ export function ItemListView() {
   // createItem() takes in a summary and then creates an Item object with that summary
   const createItem = useCallback(
     async (summary: any, value: any) => {
+      realm.write(() => {
+        return new Agents(realm, {
+          first_name_: 'Antonio 123',
+          last_name_: 'Salgueo 123',
+          address_: 'Colombia',
+          username_: 'antsal 123',
+          email_: 'ant1@gmail.com',
+          latitude: '18.4083838',
+          longitude: '-66.1596594',
+          phone_: '+57 314 8731345',
+          fleet_image: 'https://avatars.githubusercontent.com/u/1180972?v=4',
+          is_active: 0,
+          is_available: 1,
+          status_: 0,
+          user_role_: '641b6386e53114e63c59b50f',
+          team_id_: ['641dff9fd664705628a62d4a', '641b6349e53114e63c59b3f2'],
+          template_id_: [
+            '6421f3d9425ac7525f9b4a79',
+            '641e08f25c26a31d86a878e8',
+          ],
+          transport_type_: null,
+          idOptional: '1680288823513s',
+          transport_desc_: '',
+          tags_: ['t1'],
+          password_: 'a123456',
+          was_deleted: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          __v: 0,
+          uid_: 'zjZHgpu77ReY6cZ7986gOMeGxMt2',
+        } as any);
+      });
       // const team = realm.write(() => {
       //   let team: any = getRandomTeam();
       //   if (!team.location_accuracy_) team.location_accuracy_ = 'High';
@@ -153,16 +184,28 @@ export function ItemListView() {
       //     team.template_id_ = JSON.stringify(team.template_id_);
       //   return new Teams(realm, {...team, owner_id: user?.id});
       // });
-
-      realm.write(() => {
-        return new Tasks(realm, {
-          owner_id: user?.id,
-          customFields: JSON.stringify({value, summary}),
-          job_status_: 'assigned',
-          team_id_: temas[1],
-        } as any);
-      });
-
+      // realm.write(() => {
+      //   return new UserRol(realm, {
+      //     agentRol_name: 'auto asssing NEW',
+      //     create_task: true,
+      //     update_profile: true,
+      //     view_open_tasks: true,
+      //     on_hold_buttom: true,
+      //     map_view: false,
+      //     idOptional: '1676050092710',
+      //     createdAt: new Date('2023-02-10T17:28:12.717Z'),
+      //     updatedAt: new Date('2023-02-10T17:28:12.717Z'),
+      //     __v: 0,
+      //   } as any);
+      // });
+      // realm.write(() => {
+      //   return new Tasks(realm, {
+      //     owner_id: user?.id,
+      //     customFields: JSON.stringify({value, summary}),
+      //     job_status_: 'assigned',
+      //     team_id_: temas[1],
+      //   } as any);
+      // });
       // realm.write(() => {
       //   let template: any = geteRandomTemplate();
       //   if (template.config) {

@@ -66,7 +66,7 @@ export class UserRol extends Realm.Object {
   static schema = getProperties('agent_rols', {
     //Strings:
     agentRol_name: optionalProperty('string'),
-    idOptional: optionalProperty('string'),
+    idOptional: optionalProperty('string'), // TODO: change type here FIXME:
 
     //Numbers:
     __v: optionalProperty('int'),
