@@ -9,7 +9,15 @@ import {CreateToDoPrompt} from './CreateToDoPrompt';
 import {realmContext} from './RealmContext';
 
 import {COLORS} from './Colors';
-import {UserRol, Agents, Customers, Fields, Tasks, Teams, Templates} from './ItemSchema';
+import {
+  UserRol,
+  Agents,
+  Customers,
+  Fields,
+  Tasks,
+  Teams,
+  Templates,
+} from './ItemSchema';
 import {geteRandomTemplate, getRandomTeam} from './utils';
 
 const {useRealm, useQuery} = realmContext;
@@ -35,8 +43,6 @@ const ownTeamsSubscriptionName = 'ownTeams';
 const templatesSubscriptionName = 'templates';
 const ownTemplatesSubscriptionName = 'ownTemplates';
 
-
-
 export function ItemListView() {
   const realm = useRealm();
 
@@ -48,16 +54,25 @@ export function ItemListView() {
   const items_tasks = useQuery(Tasks).sorted('_id');
   const items_teams = useQuery(Teams).sorted('_id');
   const items_templates = useQuery(Templates);
-  
-  console.log("FETCH: agents_rols: ",JSON.parse(JSON.stringify(items_userRol)));
-  console.log("FETCH: agents: ",JSON.parse(JSON.stringify(items_agents)));
-  console.log("FETCH: customers: ",JSON.parse(JSON.stringify(items_customers)));
-  console.log("FETCH: fields: ",JSON.parse(JSON.stringify(items_fields)));
-  console.log("FETCH: tasks: ",JSON.parse(JSON.stringify(items_tasks )));
-  console.log("FETCH: teams: ",JSON.parse(JSON.stringify(items_teams )));
-  console.log("FETCH: templates: ",JSON.parse(JSON.stringify(items_templates)));
-  
-  
+
+  // console.log(
+  //   'FETCH: agents_rols: ',
+  //   JSON.parse(JSON.stringify(items_userRol)),
+  // );
+  console.log('FETCH: agents: ', JSON.parse(JSON.stringify(items_agents)));
+
+  // console.log(
+  //   'FETCH: customers: ',
+  //   JSON.parse(JSON.stringify(items_customers)),
+  // );
+  // console.log('FETCH: fields: ', JSON.parse(JSON.stringify(items_fields)));
+  // console.log('FETCH: tasks: ', JSON.parse(JSON.stringify(items_tasks)));
+  // console.log('FETCH: teams: ', JSON.parse(JSON.stringify(items_teams)));
+  // console.log(
+  //   'FETCH: templates: ',
+  //   JSON.parse(JSON.stringify(items_templates)),
+  // );
+
   const user = useUser();
   const [showNewItemOverlay, setShowNewItemOverlay] = useState(false);
   const [showAllItems, setShowAllItems] = useState(
@@ -67,7 +82,6 @@ export function ItemListView() {
   // realm.addListener('change', error => console.log({error}));
 
   useEffect(() => {
-
     //UserRols
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
@@ -169,7 +183,7 @@ export function ItemListView() {
       });
     }
 
-  //Templates
+    //Templates
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
         mutableSubs.removeByName(ownTemplatesSubscriptionName);
@@ -185,8 +199,6 @@ export function ItemListView() {
         });
       });
     }
-
-
   }, [realm, user, showAllItems]);
 
   // createItem() takes in a summary and then creates an Item object with that summary
@@ -194,11 +206,11 @@ export function ItemListView() {
     async (summary: any, value: any) => {
       realm.write(() => {
         return new Agents(realm, {
-          first_name_: 'Antonio 123',
-          last_name_: 'Salgueo 123',
+          first_name_: 'arss 1',
+          last_name_: 'salg 1',
           address_: 'Colombia',
-          username_: 'antsal 123',
-          email_: 'ant1@gmail.com',
+          username_: 'arss',
+          email_: 'arss1234@gmail.com',
           latitude: '18.4083838',
           longitude: '-66.1596594',
           phone_: '+57 314 8731345',
@@ -206,31 +218,36 @@ export function ItemListView() {
           is_active: 0,
           is_available: 1,
           status_: 0,
-          user_role_: '641b6386e53114e63c59b50f',
-          team_id_: ['641dff9fd664705628a62d4a', '641b6349e53114e63c59b3f2'],
+          user_role_: '641b6386e53114e63c59b50f', // TODO: add the whole user object here.
+          team_id_: ['642c5fd0fea1e9e4a36064b8', '642d668a5bd84e69179bf562'],
           template_id_: [
             '6421f3d9425ac7525f9b4a79',
             '641e08f25c26a31d86a878e8',
+            '64300d265ab5f6c2bc816796',
           ],
           transport_type_: null,
-          idOptional: '1680288823513s',
+          idOptional: '1680873847127s',
           transport_desc_: '',
-          tags_: ['t1'],
+          tags_: [],
           password_: 'a123456',
           was_deleted: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: '2023-04-07T13:24:07.132Z',
+          updatedAt: '2023-04-07T14:51:21.630Z',
           __v: 0,
-          uid_: 'zjZHgpu77ReY6cZ7986gOMeGxMt2',
+          uid_: 'AakUjQ3xSsRFd04V0QHqWDxLnYk1',
         } as any);
       });
+      // const template = realm.write(() => {
+      //   return new Templates(realm, getRandomTeam() as any);
+      // });
+      // console.log({template});
       // const team = realm.write(() => {
       //   let team: any = getRandomTeam();
       //   if (!team.location_accuracy_) team.location_accuracy_ = 'High';
-      //   if (team.template_id_)
-      //     team.template_id_ = JSON.stringify(team.template_id_);
+      //   if (team.template_id_) team.template_id_ = [template];
       //   return new Teams(realm, {...team, owner_id: user?.id});
       // });
+      // console.log({team});
       // realm.write(() => {
       //   return new UserRol(realm, {
       //     agentRol_name: 'auto asssing NEW',
@@ -250,7 +267,7 @@ export function ItemListView() {
       //     owner_id: user?.id,
       //     customFields: JSON.stringify({value, summary}),
       //     job_status_: 'assigned',
-      //     team_id_: temas[1],
+      //     // team_id_: temas[1],
       //   } as any);
       // });
       // realm.write(() => {

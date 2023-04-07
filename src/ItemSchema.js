@@ -1,12 +1,11 @@
 import Realm from 'realm';
 import {defaultProperties, getProperties, optionalProperty} from './utils';
 
-
 export class UserRol extends Realm.Object {
   static schema = getProperties('agent_rols', {
     //Strings:
     agentRol_name: optionalProperty('string'),
-    idOptional: optionalProperty('string'), 
+    idOptional: optionalProperty('string'),
 
     //Numbers:
     __v: optionalProperty('int'),
@@ -24,7 +23,6 @@ export class UserRol extends Realm.Object {
     updatedAt: optionalProperty('date'),
   });
 }
-
 
 export class Agents extends Realm.Object {
   static schema = getProperties('agents', {
@@ -63,9 +61,7 @@ export class Agents extends Realm.Object {
     team_id_: {type: 'list', objectType: 'teams', default: []},
     template_id_: {type: 'list', objectType: 'templates', default: []},
     // template_id_: optionalProperty('objectId[]'),
-    
   });
-  
 }
 
 export class Customers extends Realm.Object {
@@ -86,16 +82,13 @@ export class Customers extends Realm.Object {
     is_form_user_: optionalProperty('bool'),
     was_deleted: optionalProperty('bool'),
 
-
     // date
     createdAt: optionalProperty('date'),
     updatedAt: optionalProperty('date'),
 
     // Tipo Array
     tags_: {type: 'list', objectType: 'string', default: []},
- 
   });
-  
 }
 
 export class Fields extends Realm.Object {
@@ -115,20 +108,14 @@ export class Fields extends Realm.Object {
     // date
     createdAt: optionalProperty('date'),
     updatedAt: optionalProperty('date'),
-    
+
     //array
-    child_items: {type: 'list', objectType: 'object', default: []}
-
+    child_items_string: optionalProperty('string'), // here we'll be saving the data using stringify.
   });
-  
 }
-
-
-
 
 export class Tasks extends Realm.Object {
   static schema = getProperties('tasks', {
-    
     //strings
     autoAllocationState: optionalProperty('string'),
     job_address_: optionalProperty('string'),
@@ -139,7 +126,7 @@ export class Tasks extends Realm.Object {
 
     //numbers
     order_id: optionalProperty('int'),
-    duration: optionalProperty('double'), 
+    duration: optionalProperty('double'),
     job_latitude_: optionalProperty('double'),
     job_longitude_: optionalProperty('double'),
     job_pickup_latitude: optionalProperty('double'),
@@ -147,18 +134,29 @@ export class Tasks extends Realm.Object {
     agentPrice: optionalProperty('double'),
     taskPrice: optionalProperty('double'),
 
-    customFieldsConfig: optionalProperty('string'),
+    customFieldsConfig: {
+      type: 'object',
+      objectType: 'customFieldConfig',
+      optional: true,
+    },
 
     // list
-    events: {type: 'list', objectType: 'object', default: [],optional: true},
-    route: {type: 'list', objectType: 'object', default: [],optional: true},
-    customFields: {type: 'list', objectType: 'object', default: [],optional: true},
-    
+    events: {type: 'list', objectType: 'events', default: []},
+    route: {type: 'list', objectType: 'route', default: []},
+    // customFields: {
+    //   type: 'list',
+    //   objectType: 'object',
+    //   default: [],
+    //   optional: true,
+    // }, // TODO: remove it  ,
+
+    customFields_: optionalProperty('string'),
+
     //objects 1:1
-    team_id_:      {type: 'object', objectType: 'teams', optional: true},
-    customer_id_:  {type: 'object', objectType: 'customers', optional: true},
-    template_id_:  {type: 'object', objectType: 'templates', optional: true},
-    
+    team_id_: {type: 'object', objectType: 'teams', optional: true},
+    customer_id_: {type: 'object', objectType: 'customers', optional: true},
+    template_id_: {type: 'object', objectType: 'templates', optional: true},
+
     //date
     job_pickup_datetime: optionalProperty('date'),
     lastPauseTime: optionalProperty('date'),
@@ -172,20 +170,44 @@ export class Tasks extends Realm.Object {
     // 1:!
     team_id_: {type: 'object', objectType: 'teams'},
     ...defaultProperties,
-  
+  });
+}
+export class CustomFieldConfig extends Realm.Object {
+  static schema = getProperties('customFieldConfig', {
+    needOtp: optionalProperty('bool'),
+    otp: optionalProperty('int'),
+    autoAllocation: optionalProperty('objectId'),
+    priceRuleTask: optionalProperty('objectId'),
+    priceRuleAgent: optionalProperty('objectId'),
+    notification: optionalProperty('objectId'),
+  });
+}
+export class Route extends Realm.Object {
+  static schema = getProperties('route', {
+    latitude: optionalProperty('double'),
+    longitude: optionalProperty('double'),
+    date: optionalProperty('date'),
+  });
+}
+export class Events extends Realm.Object {
+  static schema = getProperties('events', {
+    title: optionalProperty('string'),
+    start: optionalProperty('date'),
+    description: optionalProperty('string'),
+    author: optionalProperty('string'),
+    device: optionalProperty('string'),
   });
 }
 
 export class Teams extends Realm.Object {
   static schema = getProperties('teams', {
-    
     address_: optionalProperty('string'),
     location_accuracy_: optionalProperty('string'),
     team_name_: optionalProperty('string'),
     idOptional: optionalProperty('string'),
-   
+
     //Array
-    template_id_: {type: 'list', objectType: 'object', default: []},
+    template_id_: {type: 'list', objectType: 'templates', default: []},
 
     // int
     __v: optionalProperty('int'),
@@ -193,35 +215,31 @@ export class Teams extends Realm.Object {
     //bool
     is_default: optionalProperty('bool'),
     was_deleted: optionalProperty('bool'),
-     //date:
+    //date:
     createdAt: optionalProperty('date'),
     updatedAt: optionalProperty('date'),
-    
   });
 }
 
-
-
 export class Templates extends Realm.Object {
   static schema = getProperties('templates', {
-    
     //string
     template_name: optionalProperty('string'),
-    idOptional:optionalProperty('string'),
+    idOptional: optionalProperty('string'),
 
     //numbers
     __v: optionalProperty('int'),
 
     //mixed
-    config: optionalProperty('mixed'),  
+    config: optionalProperty('mixed'),
 
     //list 1:1
-    fields:  {type: 'list', objectType: 'fields', default: []},
+    fields: {type: 'list', objectType: 'fields', default: []},
 
     // bool
     is_default: optionalProperty('bool'),
     was_deleted: optionalProperty('bool'),
-    
+
     //date:
     createdAt: optionalProperty('date'),
     updatedAt: optionalProperty('date'),

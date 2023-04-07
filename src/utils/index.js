@@ -995,8 +995,20 @@ const templates = [
 ];
 
 export const getRandomTeam = () => {
-  const randomIndex = Math.floor(Math.random() * teams.length);
-  return teams[randomIndex];
+  // const randomIndex = Math.floor(Math.random() * teams.length);
+  // return teams[randomIndex];
+  return {
+    address_: 'Colombia',
+    team_name_: 'TEAM DEFAULT 22',
+    location_accuracy_: 'Low',
+    idOptional: '1680629488979s',
+    template_id_: [],
+    is_default: true,
+    was_deleted: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    __v: 0,
+  };
 };
 
 export const geteRandomTemplate = () => {
