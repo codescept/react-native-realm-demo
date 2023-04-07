@@ -134,62 +134,21 @@ export class Tasks extends Realm.Object {
     agentPrice: optionalProperty('double'),
     taskPrice: optionalProperty('double'),
 
-    // customFieldsConfig: {
-    //   type: 'object',
-    //   objectType: 'customFieldConfig',
-    //   optional: true,
-    // },
+    customFieldsConfig: {
+      type: 'object',
+      objectType: 'customFieldConfig',
+      optional: true,
+    },
+
     // list
-    //events: {type: 'list', objectType: 'events', default: []},
-    //route: {type: 'list', objectType: 'route', default: []},
+    events: {type: 'list', objectType: 'events', default: []},
+    route: {type: 'list', objectType: 'route', default: []},
     // customFields: {
     //   type: 'list',
     //   objectType: 'object',
     //   default: [],
     //   optional: true,
     // }, // TODO: remove it  ,
-
-    
-    customFieldsConfig: {
-      type: 'object',
-      optional: true,
-      properties: {
-        needOtp: optionalProperty('bool'),
-        otp: optionalProperty('int'),
-        autoAllocation: optionalProperty('objectId'),
-        priceRuleTask: optionalProperty('objectId'),
-        priceRuleAgent: optionalProperty('objectId'),
-        notification: optionalProperty('objectId'),
-      }
-    },
-
-    events: {
-      type: 'list',
-      optional: true,
-      properties: {
-        title: optionalProperty('string'),
-        start: optionalProperty('date'),
-        description: optionalProperty('string'),
-        author: optionalProperty('string'),
-        device: optionalProperty('string'),
-      }  
-    },
-
-    route: {
-      type: 'list', 
-      optional:true,
-      properties: {
-        latitude: optionalProperty('double'),
-        longitude: optionalProperty('double'),
-        date: optionalProperty('date'),
-      }  
-    },
-
-
-
-
-
-
 
     customFields_: optionalProperty('string'),
 
@@ -214,30 +173,42 @@ export class Tasks extends Realm.Object {
   });
 }
 export class CustomFieldConfig extends Realm.Object {
-  static schema = getProperties('customFieldConfig', {
-    needOtp: optionalProperty('bool'),
-    otp: optionalProperty('int'),
-    autoAllocation: optionalProperty('objectId'),
-    priceRuleTask: optionalProperty('objectId'),
-    priceRuleAgent: optionalProperty('objectId'),
-    notification: optionalProperty('objectId'),
-  });
+  static schema = {
+    name: 'customFieldConfig',
+    embedded: true,
+    properties: {
+      needOtp: optionalProperty('bool'),
+      otp: optionalProperty('int'),
+      autoAllocation: optionalProperty('objectId'),
+      priceRuleTask: optionalProperty('objectId'),
+      priceRuleAgent: optionalProperty('objectId'),
+      notification: optionalProperty('objectId'),
+    },
+  };
 }
 export class Route extends Realm.Object {
-  static schema = getProperties('route', {
-    latitude: optionalProperty('double'),
-    longitude: optionalProperty('double'),
-    date: optionalProperty('date'),
-  });
+  static schema = {
+    name: 'route',
+    embedded: true,
+    properties: {
+      latitude: optionalProperty('double'),
+      longitude: optionalProperty('double'),
+      date: optionalProperty('date'),
+    },
+  };
 }
 export class Events extends Realm.Object {
-  static schema = getProperties('events', {
-    title: optionalProperty('string'),
-    start: optionalProperty('date'),
-    description: optionalProperty('string'),
-    author: optionalProperty('string'),
-    device: optionalProperty('string'),
-  });
+  static schema = {
+    name: 'events',
+    embedded: true,
+    properties: {
+      title: optionalProperty('string'),
+      start: optionalProperty('date'),
+      description: optionalProperty('string'),
+      author: optionalProperty('string'),
+      device: optionalProperty('string'),
+    },
+  };
 }
 
 export class Teams extends Realm.Object {

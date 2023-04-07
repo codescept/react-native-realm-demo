@@ -212,39 +212,6 @@ export function ItemListView() {
   // createItem() takes in a summary and then creates an Item object with that summary
   const createItem = useCallback(
     async (summary: any, value: any) => {
-      realm.write(() => {
-        return new Agents(realm, {
-          first_name_: 'arss 1',
-          last_name_: 'salg 1',
-          address_: 'Colombia',
-          username_: 'arss',
-          email_: 'arss1234@gmail.com',
-          latitude: '18.4083838',
-          longitude: '-66.1596594',
-          phone_: '+57 314 8731345',
-          fleet_image: 'https://avatars.githubusercontent.com/u/1180972?v=4',
-          is_active: 0,
-          is_available: 1,
-          status_: 0,
-          user_role_: '641b6386e53114e63c59b50f', // TODO: add the whole user object here.
-          team_id_: ['642c5fd0fea1e9e4a36064b8', '642d668a5bd84e69179bf562'],
-          template_id_: [
-            '6421f3d9425ac7525f9b4a79',
-            '641e08f25c26a31d86a878e8',
-            '64300d265ab5f6c2bc816796',
-          ],
-          transport_type_: null,
-          idOptional: '1680873847127s',
-          transport_desc_: '',
-          tags_: [],
-          password_: 'a123456',
-          was_deleted: false,
-          createdAt: '2023-04-07T13:24:07.132Z',
-          updatedAt: '2023-04-07T14:51:21.630Z',
-          __v: 0,
-          uid_: 'AakUjQ3xSsRFd04V0QHqWDxLnYk1',
-        } as any);
-      });
       // const template = realm.write(() => {
       //   return new Templates(realm, getRandomTeam() as any);
       // });
