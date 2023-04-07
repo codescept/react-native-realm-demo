@@ -55,6 +55,14 @@ export function ItemListView() {
   const items_teams = useQuery(Teams).sorted('_id');
   const items_templates = useQuery(Templates);
 
+  // const {
+  //   data: items,
+  //   status,
+  //   error,
+  // } = useQuery('name_of_the_collection', collection =>
+  //   collection.find({}, {limit: 10, skip: 20}),
+  // );
+
   // console.log(
   //   'FETCH: agents_rols: ',
   //   JSON.parse(JSON.stringify(items_userRol)),
