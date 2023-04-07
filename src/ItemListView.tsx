@@ -9,37 +9,57 @@ import {CreateToDoPrompt} from './CreateToDoPrompt';
 import {realmContext} from './RealmContext';
 
 import {COLORS} from './Colors';
-import {Templates, Teams, Tasks, Agents, UserRol} from './ItemSchema';
+import {UserRol, Agents, Customers, Fields, Tasks, Teams, Templates} from './ItemSchema';
 import {geteRandomTemplate, getRandomTeam} from './utils';
 
 const {useRealm, useQuery} = realmContext;
 
-const tasksSubscriptionName = 'tasks';
-const ownTasksSubscriptionName = 'ownTasks';
-
-const templatesSubscriptionName = 'templates';
-const ownTemplatesSubscriptionName = 'ownTemplates';
-
-const teamsSubscriptionName = 'teams';
-const ownTeamsSubscriptionName = 'ownTeams';
+const useRolSubscriptionName = 'agent_rols';
+const ownuseRolSubscriptionName = 'ownAgent_rols';
 
 const agentsSubscriptionName = 'agents';
 const ownagentsSubscriptionName = 'ownAgents';
 
-const useRolSubscriptionName = 'agent_rols';
-const ownuseRolSubscriptionName = 'ownAgent_rols';
+const customersSubscriptionName = 'Customers';
+const ownCustomersSubscriptionName = 'ownCustomers';
+
+const fieldsSubscriptionName = 'Fields';
+const ownFieldsSubscriptionName = 'ownFields';
+
+const tasksSubscriptionName = 'tasks';
+const ownTasksSubscriptionName = 'ownTasks';
+
+const teamsSubscriptionName = 'teams';
+const ownTeamsSubscriptionName = 'ownTeams';
+
+const templatesSubscriptionName = 'templates';
+const ownTemplatesSubscriptionName = 'ownTemplates';
+
+
 
 export function ItemListView() {
   const realm = useRealm();
-  const items = useQuery(Tasks).sorted('_id');
-  const temas = useQuery(Teams).sorted('_id');
-  const userRoles = useQuery(UserRol);
-  const agents = useQuery(Agents);
-  console.log(JSON.parse(JSON.stringify({agents, userRoles})));
+
+  //Syncs:
+  const items_userRol = useQuery(UserRol).sorted('_id');
+  const items_agents = useQuery(Agents);
+  const items_customers = useQuery(Customers);
+  const items_fields = useQuery(Fields);
+  const items_tasks = useQuery(Tasks).sorted('_id');
+  const items_teams = useQuery(Teams).sorted('_id');
+  const items_templates = useQuery(Templates);
+  
+  console.log("FETCH: agents_rols: ",JSON.parse(JSON.stringify(items_userRol)));
+  console.log("FETCH: agents: ",JSON.parse(JSON.stringify(items_agents)));
+  console.log("FETCH: customers: ",JSON.parse(JSON.stringify(items_customers)));
+  console.log("FETCH: fields: ",JSON.parse(JSON.stringify(items_fields)));
+  console.log("FETCH: tasks: ",JSON.parse(JSON.stringify(items_tasks )));
+  console.log("FETCH: teams: ",JSON.parse(JSON.stringify(items_teams )));
+  console.log("FETCH: templates: ",JSON.parse(JSON.stringify(items_templates)));
+  
+  
   const user = useUser();
-
   const [showNewItemOverlay, setShowNewItemOverlay] = useState(false);
-
   const [showAllItems, setShowAllItems] = useState(
     !!realm.subscriptions.findByName(tasksSubscriptionName),
   );
@@ -47,6 +67,8 @@ export function ItemListView() {
   // realm.addListener('change', error => console.log({error}));
 
   useEffect(() => {
+
+    //UserRols
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
         mutableSubs.removeByName(ownuseRolSubscriptionName);
@@ -63,6 +85,7 @@ export function ItemListView() {
       });
     }
 
+    //Agents
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
         mutableSubs.removeByName(ownagentsSubscriptionName);
@@ -79,6 +102,41 @@ export function ItemListView() {
       });
     }
 
+    //Customers
+    if (showAllItems) {
+      realm.subscriptions.update(mutableSubs => {
+        mutableSubs.removeByName(ownCustomersSubscriptionName);
+        mutableSubs.add(realm.objects(Customers), {
+          name: customersSubscriptionName,
+        });
+      });
+    } else {
+      realm.subscriptions.update(mutableSubs => {
+        mutableSubs.removeByName(customersSubscriptionName);
+        mutableSubs.add(realm.objects(Customers), {
+          name: ownCustomersSubscriptionName,
+        });
+      });
+    }
+
+    //Fields
+    if (showAllItems) {
+      realm.subscriptions.update(mutableSubs => {
+        mutableSubs.removeByName(ownFieldsSubscriptionName);
+        mutableSubs.add(realm.objects(Fields), {
+          name: fieldsSubscriptionName,
+        });
+      });
+    } else {
+      realm.subscriptions.update(mutableSubs => {
+        mutableSubs.removeByName(fieldsSubscriptionName);
+        mutableSubs.add(realm.objects(Fields), {
+          name: ownFieldsSubscriptionName,
+        });
+      });
+    }
+
+    //Tasks
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
         mutableSubs.removeByName(ownTasksSubscriptionName);
@@ -94,21 +152,24 @@ export function ItemListView() {
       });
     }
 
+    //Teams
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
-        mutableSubs.removeByName(ownTasksSubscriptionName);
-        mutableSubs.add(realm.objects(Tasks), {name: tasksSubscriptionName});
+        mutableSubs.removeByName(ownTeamsSubscriptionName);
+        mutableSubs.add(realm.objects(Teams), {
+          name: teamsSubscriptionName,
+        });
       });
     } else {
       realm.subscriptions.update(mutableSubs => {
-        mutableSubs.removeByName(tasksSubscriptionName);
-        mutableSubs.add(
-          realm.objects(Tasks).filtered(`owner_id == "${user?.id}"`),
-          {name: ownTasksSubscriptionName},
-        );
+        mutableSubs.removeByName(teamsSubscriptionName);
+        mutableSubs.add(realm.objects(Teams), {
+          name: ownTeamsSubscriptionName,
+        });
       });
     }
 
+  //Templates
     if (showAllItems) {
       realm.subscriptions.update(mutableSubs => {
         mutableSubs.removeByName(ownTemplatesSubscriptionName);
@@ -125,21 +186,7 @@ export function ItemListView() {
       });
     }
 
-    if (showAllItems) {
-      realm.subscriptions.update(mutableSubs => {
-        mutableSubs.removeByName(ownTeamsSubscriptionName);
-        mutableSubs.add(realm.objects(Teams), {
-          name: teamsSubscriptionName,
-        });
-      });
-    } else {
-      realm.subscriptions.update(mutableSubs => {
-        mutableSubs.removeByName(teamsSubscriptionName);
-        mutableSubs.add(realm.objects(Teams), {
-          name: ownTeamsSubscriptionName,
-        });
-      });
-    }
+
   }, [realm, user, showAllItems]);
 
   // createItem() takes in a summary and then creates an Item object with that summary
@@ -268,7 +315,7 @@ export function ItemListView() {
         </Overlay>
         <FlatList
           keyExtractor={item => item._id.toString()}
-          data={items as any}
+          data={items_tasks as any}
           renderItem={({item}) => {
             let summary: string = '';
             try {
