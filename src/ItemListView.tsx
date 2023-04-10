@@ -8,6 +8,8 @@ import {BSON} from 'realm';
 import {CreateToDoPrompt} from './CreateToDoPrompt';
 import {realmContext} from './RealmContext';
 
+import { ObjectID } from 'bson';
+
 import {COLORS} from './Colors';
 import {
   UserRol,
@@ -63,23 +65,14 @@ export function ItemListView() {
   //   collection.find({}, {limit: 10, skip: 20}),
   // );
 
-  // console.log(
-  //   'FETCH: agents_rols: ',
-  //   JSON.parse(JSON.stringify(items_userRol)),
-  // );
-  console.log('FETCH: agents: ', JSON.parse(JSON.stringify(items_agents)));
+  //console.log( 'FETCH: agents_rols: ', JSON.parse(JSON.stringify(items_userRol)));
+  //console.log('FETCH: agents: ', JSON.parse(JSON.stringify(items_agents)));
+  //console.log('FETCH: customers: ', JSON.parse(JSON.stringify(items_customers)));
+  //console.log('FETCH: fields: ', JSON.parse(JSON.stringify(items_fields)));
+  //console.log('FETCH: teams: ', JSON.parse(JSON.stringify(items_teams)));
+  //console.log('FETCH: templates: ', JSON.parse(JSON.stringify(items_templates)));
 
-  // console.log(
-  //   'FETCH: customers: ',
-  //   JSON.parse(JSON.stringify(items_customers)),
-  // );
-  // console.log('FETCH: fields: ', JSON.parse(JSON.stringify(items_fields)));
-  // console.log('FETCH: tasks: ', JSON.parse(JSON.stringify(items_tasks)));
-  // console.log('FETCH: teams: ', JSON.parse(JSON.stringify(items_teams)));
-  // console.log(
-  //   'FETCH: templates: ',
-  //   JSON.parse(JSON.stringify(items_templates)),
-  // );
+  console.log('FETCH: tasks: ', JSON.parse(JSON.stringify(items_tasks)));
 
   const user = useUser();
   const [showNewItemOverlay, setShowNewItemOverlay] = useState(false);
@@ -237,14 +230,59 @@ export function ItemListView() {
       //     __v: 0,
       //   } as any);
       // });
-      // realm.write(() => {
-      //   return new Tasks(realm, {
-      //     owner_id: user?.id,
-      //     customFields: JSON.stringify({value, summary}),
-      //     job_status_: 'assigned',
-      //     // team_id_: temas[1],
-      //   } as any);
-      // });
+      realm.write(() => {
+         return new Tasks(realm, {
+            owner_id: user?.id,
+            datetime_end_before_: new Date('2023-04-08T01:11:38.131+00:00'),
+            datetime_start_before_: new Date('2023-04-08T01:11:38.131+00:00'),
+            job_latitude_: 18.2658591,
+            job_longitude_: -66.02851059999999,
+            job_description_: "Hello 12345" ,    
+            job_status_: "created",
+            customer_id_: Object('641dfe1f366de9e814905116'),
+            team_id_:Object('642c5fd0fea1e9e4a36064b8'),
+            template_id_:  Object('641e08f25c26a31d86a878e8'),
+            idOptional: "1679692940756s",
+            customFieldsConfig:{
+                needOtp: true,
+                otp: 2264,
+                autoAllocation: ObjectID.createFromHexString('641e121df68af91a241b2f9c'),
+                priceRuleTask:  ObjectID.createFromHexString('641b63eee53114e63c59b5dc'),
+                priceRuleAgent: ObjectID.createFromHexString('641b63dee53114e63c59b5b3'),
+                notification:   ObjectID.createFromHexString('641e12e0f68af91a241b3037'),
+            },  
+            events:[{
+             title: "Task created",
+             start: new Date('2023-02-10T17:28:12.717Z'),
+             description: "dummy10",
+             autor:  "dummy2",
+             device: "dummy3",
+           },
+           {
+             title: "Task created2",
+             start: new Date('2023-02-10T17:28:12.717Z'),
+             description: "dummy102",
+             autor:  "dummy22",
+             device: "dummy32",
+           }] ,
+           route:[{
+             timestamp: 734343434589,
+             mocked: false,
+             coords:
+                   {
+                     accuracy:  524524352,
+                     altitude: 245243852043805,
+                     altitudeAccuracy:  24502438052,
+                     heading:  24524502,
+                     latitude:  2405234805,
+                     longitude: 2405240523,
+                     speed: 245234805,   
+                   }
+           }] 
+         
+
+         } as any);
+       });
       // realm.write(() => {
       //   let template: any = geteRandomTemplate();
       //   if (template.config) {

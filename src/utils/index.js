@@ -31,8 +31,8 @@ export const optionalProperty = type => ({
 });
 
 export const defaultProperties = {
-  createdAt: {type: 'date', default: new Date()},
-  updatedAt: {type: 'date', default: new Date()},
+  //createdAt: {type: 'date', default: new Date()},
+  //updatedAt: {type: 'date', default: new Date()},
   owner_id: 'string',
 };
 

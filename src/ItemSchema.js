@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import {defaultProperties, getProperties, optionalProperty} from './utils';
+import {defaultProperties, getProperties,getProperties2, optionalProperty} from './utils';
 
 export class UserRol extends Realm.Object {
   static schema = getProperties('agent_rols', {
@@ -40,11 +40,11 @@ export class Agents extends Realm.Object {
     idOptional: optionalProperty('string'),
     transport_desc_: optionalProperty('string'),
     password_: optionalProperty('string'),
+    status_: optionalProperty('string'),
 
     //Numbers:
     is_active: optionalProperty('int'),
     is_available: optionalProperty('int'),
-    status_: optionalProperty('int'),
     __v: optionalProperty('int'),
 
     // bool:
@@ -133,25 +133,10 @@ export class Tasks extends Realm.Object {
     job_pickup_longitude: optionalProperty('double'),
     agentPrice: optionalProperty('double'),
     taskPrice: optionalProperty('double'),
+    __v: optionalProperty('int'),
 
-    customFieldsConfig: {
-      type: 'object',
-      objectType: 'customFieldConfig',
-      optional: true,
-    },
-
-    // list
-    events: {type: 'list', objectType: 'events', default: []},
-    route: {type: 'list', objectType: 'route', default: []},
-    // customFields: {
-    //   type: 'list',
-    //   objectType: 'object',
-    //   default: [],
-    //   optional: true,
-    // }, // TODO: remove it  ,
 
     customFields_: optionalProperty('string'),
-
     //objects 1:1
     team_id_: {type: 'object', objectType: 'teams', optional: true},
     customer_id_: {type: 'object', objectType: 'customers', optional: true},
@@ -164,14 +149,26 @@ export class Tasks extends Realm.Object {
     end_time: optionalProperty('date'),
     createdAt: optionalProperty('date'),
     updatedAt: optionalProperty('date'),
-    //datetime_end_before_:  optionalProperty('date'),
-    //datetime_start_before_:  optionalProperty('date'),
+    datetime_end_before_:  optionalProperty('date'),
+    datetime_start_before_:  optionalProperty('date'),
+
+    // Objectos:
+    customFieldsConfig: {
+      type: 'object',
+      objectType: 'customFieldConfig',
+      optional: true,
+    },
+
+    // list
+    events: {type: 'list', objectType: 'events', default: []},
+    route: {type: 'list', objectType: 'route', default: []},
 
     // 1:!
     team_id_: {type: 'object', objectType: 'teams'},
     ...defaultProperties,
   });
 }
+
 export class CustomFieldConfig extends Realm.Object {
   static schema = {
     name: 'customFieldConfig',
@@ -186,17 +183,38 @@ export class CustomFieldConfig extends Realm.Object {
     },
   };
 }
+
 export class Route extends Realm.Object {
   static schema = {
     name: 'route',
     embedded: true,
     properties: {
-      latitude: optionalProperty('double'),
-      longitude: optionalProperty('double'),
-      date: optionalProperty('date'),
+      timestamp: optionalProperty('double'),
+      mocked: optionalProperty('bool'),
+      coords: {type: 'object', objectType: 'coords', default: []},
     },
   };
 }
+
+export class Coords extends Realm.Object {
+  static schema = {
+    name: 'coords',
+    embedded: true,
+    properties: {
+      accuracy:  optionalProperty('double'),
+      altitude: optionalProperty('double'),
+      altitudeAccuracy:  optionalProperty('double'),
+      heading:  optionalProperty('double'),
+      latitude:  optionalProperty('double'),
+      longitude: optionalProperty('double'),
+      speed: optionalProperty('double'),
+    },
+  };
+}
+
+
+
+
 export class Events extends Realm.Object {
   static schema = {
     name: 'events',
@@ -205,11 +223,14 @@ export class Events extends Realm.Object {
       title: optionalProperty('string'),
       start: optionalProperty('date'),
       description: optionalProperty('string'),
-      author: optionalProperty('string'),
+      autor: optionalProperty('string'),
       device: optionalProperty('string'),
     },
   };
 }
+
+
+
 
 export class Teams extends Realm.Object {
   static schema = getProperties('teams', {

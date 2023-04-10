@@ -10,6 +10,7 @@ import {
   Events,
   Route,
   CustomFieldConfig,
+  Coords,
 } from './ItemSchema';
 
 export const realmContext = createRealmContext({
@@ -24,5 +25,6 @@ export const realmContext = createRealmContext({
     Events,
     CustomFieldConfig,
     Route,
+    Coords,
   ],
 });
