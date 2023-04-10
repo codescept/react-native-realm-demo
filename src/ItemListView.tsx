@@ -22,6 +22,9 @@ import {
 } from './ItemSchema';
 import {geteRandomTemplate, getRandomTeam} from './utils';
 
+
+const ObjectId = Realm.BSON.ObjectId
+
 const {useRealm, useQuery} = realmContext;
 
 const useRolSubscriptionName = 'agent_rols';
@@ -72,7 +75,7 @@ export function ItemListView() {
   //console.log('FETCH: teams: ', JSON.parse(JSON.stringify(items_teams)));
   //console.log('FETCH: templates: ', JSON.parse(JSON.stringify(items_templates)));
 
-  console.log('FETCH: tasks: ', JSON.parse(JSON.stringify(items_tasks)));
+  console.log('FETCH: tasks: ', items_tasks);
 
   const user = useUser();
   const [showNewItemOverlay, setShowNewItemOverlay] = useState(false);
@@ -239,9 +242,9 @@ export function ItemListView() {
             job_longitude_: -66.02851059999999,
             job_description_: "Hello 12345" ,    
             job_status_: "created",
-            customer_id_: Object('641dfe1f366de9e814905116'),
-            team_id_:Object('642c5fd0fea1e9e4a36064b8'),
-            template_id_:  Object('641e08f25c26a31d86a878e8'),
+            customer_id_: realm.objectForPrimaryKey('customers', new ObjectId('641dfe1f366de9e814905116')) ,
+            team_id_:     realm.objectForPrimaryKey('teams', new ObjectId('642c5fd0fea1e9e4a36064b8')),
+            template_id_: realm.objectForPrimaryKey('templates', new ObjectId('641e08f25c26a31d86a878e8')),
             idOptional: "1679692940756s",
             customFieldsConfig:{
                 needOtp: true,
